@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Asset {
+  id              Int           @id @default(autoincrement())
+  assetId         String        @default(uuid())@unique
+  assetType       AssetType     // Enum for asset type
+  address         String        // Asset address
+  value           Float         // Economic value of the asset
+  acquisitionDate DateTime?     // Date of acquisition, optional
+  rentalIncome    Float?        // Income generated if rented, optional
+  ownerId         Int           // Foreign key to relate with Owner
+  owner           Owner         @relation(fields: [ownerId], references: [id]) // Relation to Owner model
+  areaSqm         Float?        // Area in square meters of the asset
+  description     String?       // Additional description of the asset, optional
+  status          AssetStatus   // Enum for asset status
+  createdAt       DateTime      @default(now()) // Automatically set timestamp for record creation
+  updatedAt       DateTime      @updatedAt // Automatically updated on every record update
+  events          AssetEvent[]  // Relation to the AssetEvent model
+
+}
+
+model Owner {
+  id     Int      @id @default(autoincrement())
+  name   String   // Owner's name
+  authId String     // relation with db auth
+  assets Asset[]  // Relation with the Asset model
+}
+
+model AssetEvent {
+  id          Int        @id @default(autoincrement())
+  assetId     Int        // Foreign key to relate with Asset
+  assetEventId String    @default(uuid())@unique
+  asset       Asset      @relation(fields: [assetId], references: [id]) // Relation to the Asset model
+  eventType   EventType  // Enum for event type
+  description String?    // Optional description of the event
+  eventDate   DateTime   @default(now()) // Date of the event
+}
+
+enum AssetType {
+  House
+  Apartment
+  Land
+  Building
+  Other
+}
+
+enum AssetStatus {
+  Available
+  Occupied
+  ForSale
+  Rented
+}
+
+enum EventType {
+  Created
+  Updated
+  Deleted
+  Acquired
+  ListedForSale
+  Sold
+  Leased
+  LeaseTerminated
+  MaintenanceScheduled
+  MaintenanceCompleted
+  ValuationUpdated
+  Decommissioned
+  DamageReported
+  InsuranceClaimFiled
+  RenovationStarted
+  RenovationCompleted
+}
