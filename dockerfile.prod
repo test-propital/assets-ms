@@ -11,6 +11,9 @@ RUN npm install
 FROM node:21-alpine3.19 as build
 ARG POSTGRES_DB_URL
 ENV DATABASE_URL=$POSTGRES_DB_URL
+
+# Imprimir el arg para ver el valor recibido
+RUN echo "database_url ::: $POSTGRES_DB_URL";
 WORKDIR /usr/src/app
 #copiar de deps los modulos de node
 COPY  --from=deps /usr/src/app/node_modules ./node_modules
