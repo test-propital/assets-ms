@@ -295,7 +295,6 @@ export class AssetsService {
           description: eventDescription,
         },
       });
-      console.log('---------------------------ref');
       const ref = {
         message: `${newEvent.description}`,
         userId: authId,
